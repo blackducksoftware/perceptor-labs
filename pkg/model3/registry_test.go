@@ -3,7 +3,7 @@ package model3
 import (
 	"testing"
 
-	"github.com/jayunit100/vuln-sim/pkg/util"
+	"github.com/blackducksoftware/vuln-sim/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 

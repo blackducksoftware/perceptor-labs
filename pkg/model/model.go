@@ -11,7 +11,7 @@ import (
 	randomdata "github.com/Pallinder/go-randomdata"
 	log "github.com/sirupsen/logrus"
 
-	util "github.com/jayunit100/vuln-sim/pkg/util"
+	util "github.com/blackducksoftware/vuln-sim/pkg/util"
 )
 
 type Datacenter struct {

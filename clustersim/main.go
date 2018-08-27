@@ -7,8 +7,8 @@ import (
 
 	// <- ui shortcut, optional
 
-	"github.com/jayunit100/vuln-sim/pkg/model3"
-	"github.com/jayunit100/vuln-sim/pkg/view"
+	"github.com/blackducksoftware/vuln-sim/pkg/model3"
+	"github.com/blackducksoftware/vuln-sim/pkg/view"
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/profile"
 	"github.com/sirupsen/logrus"

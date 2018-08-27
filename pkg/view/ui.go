@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/blackducksoftware/vuln-sim/pkg/model3"
 	"github.com/gizak/termui"
-	"github.com/jayunit100/vuln-sim/pkg/model3"
 	"github.com/sirupsen/logrus"
 )
 

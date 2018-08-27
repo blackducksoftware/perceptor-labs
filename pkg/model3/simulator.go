@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/jayunit100/vuln-sim/pkg/util"
+	"github.com/blackducksoftware/vuln-sim/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 
