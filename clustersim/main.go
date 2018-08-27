@@ -93,9 +93,9 @@ func ExperimentalSimulation1() {
 		EventsPerMinute:  10,
 		MaxPodsPerApp:    10,
 		NumUsers:         100,
-		RegistrySize:     100000,
-		ScansPerMinute:   float32(1), // this is really fast !
-		SimTime:          time.Duration(24*7*365) * time.Hour,
+		RegistrySize:     1000,
+		ScansPerMinute:   float32(10), // this is really fast !
+		SimTime:          time.Duration(48) * time.Hour,
 	}
 
 	done := make(chan bool)
