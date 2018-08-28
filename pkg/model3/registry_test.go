@@ -62,7 +62,6 @@ func TestRegRepeats(t *testing.T) {
 		logrus.Infof("Saw everything way to fast !")
 		t.Fail()
 	}
-	panic("a")
 }
 
 func TestRegVulns(t *testing.T) {
