@@ -14,5 +14,5 @@ RUN go build ./
 RUN chmod 777 clustersim
 RUN ls -altrh ./
 
-CMD /bin/sh
+CMD go run main.go
 

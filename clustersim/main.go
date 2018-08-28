@@ -58,73 +58,38 @@ func test() {
 	table.Render()
 }
 
-func experiment1() {
-	c := &model3.ClusterSim{
-		ChurnProbability: .10,
-		EventsPerMinute:  10,
-		MaxPodsPerApp:    10,
-		NumUsers:         100,
-		RegistrySize:     1000,
-		ScansPerMinute:   float32(1000),
-		SimTime:          time.Duration(48) * time.Hour,
-	}
-	c.Simulate()
-	d := &model3.ClusterSim{
-		ChurnProbability: .10,
-		EventsPerMinute:  10,
-		MaxPodsPerApp:    10,
-		NumUsers:         100,
-		RegistrySize:     1000,
-		ScansPerMinute:   float32(2000),
-		SimTime:          time.Duration(48) * time.Hour,
-	}
-	d.Simulate()
-	logrus.Infof("%v", c.Describe())
-	logrus.Infof("%v", d.Describe())
-	view.LaunchUI(map[string]*model3.ClusterSim{
-		"sim1:": c,
-		"sim2:": d,
-	})
-}
-
 func ExperimentalSimulation1() {
 	base := &model3.ClusterSim{
-		ChurnProbability: .05,
-		EventsPerMinute:  10,
+		ChurnProbability: .9,
+		EventsPerMinute:  2,
 		MaxPodsPerApp:    10,
-		NumUsers:         100,
-		RegistrySize:     1000,
-		ScansPerMinute:   float32(10), // this is really fast !
-		SimTime:          time.Duration(48) * time.Hour,
+		NumUsers:         10,
+		RegistrySize:     10000,
+		ScansPerMinute:   2,
+		SimTime:          time.Duration(24) * time.Hour,
 	}
 
 	done := make(chan bool)
 
-	// simulation #1: baseline.
-	b := *base
 	go func() {
-		done <- b.Simulate()
-	}()
-
-	c := *base
-
-	// simulation #2
-	go func() {
-		c.ScansPerMinute = float32(20)
-		done <- c.Simulate()
+		done <- base.Simulate()
 	}()
 
 	<-done
-	<-done
+	/**
+		for i := 0; i < base.TotalActions(); i += 100 {
+			logrus.Infof("%v: %v", i, base.VulnsAt(i))
+			time.Sleep(500 * time.Millisecond)
+		}
+	**/
+	logrus.Infof("viz in 10s")
 
 	view.LaunchUI(map[string]*model3.ClusterSim{
-		"2xScanRate:": &b,
-		"2xUsers:":    &c,
+		"2xScanRate:": base,
 	})
 }
 
 func main() {
 	defer profile.Start().Stop()
-
 	ExperimentalSimulation1()
 }

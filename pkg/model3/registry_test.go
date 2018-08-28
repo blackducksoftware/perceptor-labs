@@ -46,6 +46,25 @@ func TestRand(t *testing.T) {
 	}
 }
 
+func TestRegRepeats(t *testing.T) {
+	maxImages := 1100
+	bases := 1000
+	r := NewRegistry(bases, maxImages)
+	seen := map[string]bool{}
+	total := len(r.Images)
+	trials := 0
+	for len(seen) < total {
+		trials++
+		seen[r.RandImageFrom().SHA] = true
+	}
+	logrus.Infof("Saw all %v images after %v trials", total, trials)
+	if trials < 3000 {
+		logrus.Infof("Saw everything way to fast !")
+		t.Fail()
+	}
+	panic("a")
+}
+
 func TestRegVulns(t *testing.T) {
 	maxImages := 20000
 	bases := 1000

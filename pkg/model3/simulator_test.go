@@ -1,7 +1,6 @@
 package model3
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -85,27 +84,45 @@ func TestSimpleConvergence(t *testing.T) {
 	}
 }
 
-// TODO FINISH PRINTING 2D HEATMAP MATRIX OF
-// Registry Size vs Scans Per Minute.
-func TestSimTest(t *testing.T) {
-	data := [][]string{}
-	regMax := 101
-	scanMax := 2
-	for regSize := 100; regSize < regMax; regSize += 200 {
-		registries := []string{}
-		for ScansPerMinute := 1; scanMax < 2; ScansPerMinute += 10 {
-			c := &ClusterSim{
-				ChurnProbability: .10,
-				EventsPerMinute:  10,
-				MaxPodsPerApp:    10,
-				NumUsers:         100,
-				RegistrySize:     regSize,
-				ScansPerMinute:   float32(ScansPerMinute),
-				SimTime:          time.Duration(2) * time.Minute,
-			}
-			c.Simulate()
-			registries = append(registries, fmt.Sprintf("%v", c.VulnerabilityTime()))
-		}
-		data = append(data, registries)
+func TestTimeSimulation(t *testing.T) {
+	hours := 48
+	scansPerMinute := 2
+	totalScansExpected := hours * scansPerMinute * 60
+	c := &ClusterSim{
+		ChurnProbability: .9, // high churn, faster exposure of vulns
+		EventsPerMinute:  9,
+		MaxPodsPerApp:    10,
+		NumUsers:         100,
+		RegistrySize:     50, // small registry, faster convergence to 0 unknown vulns
+		ScansPerMinute:   float32(scansPerMinute),
+		SimTime:          time.Duration(hours) * time.Hour,
+	}
+
+	c.Simulate()
+	logrus.Infof("total time was %v, needed ~ %v minutes", c.TimeSoFar(), c.SimTime)
+
+	if c.TimeSoFar() > 49*time.Hour {
+		logrus.Infof("WAY TOOO LONGGGG!!")
+		t.Fail()
+	}
+	if c.TimeSoFar() < 47*time.Hour {
+		logrus.Infof("WAY TOOO SHORT!!")
+		t.Fail()
+	}
+
+	// Now verify events.
+	if float32(c.eventsProcessed) > 1.1*float32(c.EventsPerMinute*60*hours) {
+		logrus.Infof("Too many events, %v, expected %v", c.eventsProcessed, c.EventsPerMinute*48*60)
+		t.Fail()
+	} else if float32(c.eventsProcessed) < .9*float32(c.EventsPerMinute*60*hours) {
+		logrus.Infof("Too FEW events, %v, expected %v", c.eventsProcessed, c.EventsPerMinute*48*60)
+		t.Fail()
+	}
+	if float32(c.scans) > 1.1*float32(totalScansExpected) {
+		logrus.Infof("Too MANY *scans*, %v, expected %v", c.scans, totalScansExpected)
+		t.Fail()
+	} else if float32(c.scans) < .9*float32(totalScansExpected) {
+		logrus.Infof("Too FEW *scans*, %v, expected %v", c.scans, totalScansExpected)
+		t.Fail()
 	}
 }

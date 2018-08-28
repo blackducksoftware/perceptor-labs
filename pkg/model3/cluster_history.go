@@ -18,6 +18,7 @@ func (h *History) currentState() map[string]map[string]*Image {
 }
 
 func (h *History) ImagesAt(i int) map[string]int {
+
 	total := map[string]int{}
 	for before := 0; before <= i; before++ {
 		for sha, count := range h.ImageAdds[before] {
@@ -64,7 +65,6 @@ func (h *History) ApplyCreate(ns string, images []*Image) {
 		h.State[c][ns][img.SHA] = img
 		h.ImageAdds[c][img.SHA] += 1
 	}
-
 }
 
 func (h *History) ApplyDestroy(ns string, images []*Image) {

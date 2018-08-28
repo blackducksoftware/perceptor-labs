@@ -2,9 +2,10 @@ package model3
 
 import (
 	"fmt"
-	"math/rand"
+	"math"
 
 	randomdata "github.com/Pallinder/go-randomdata"
+	"github.com/blackducksoftware/vuln-sim/pkg/util"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,10 +15,14 @@ type Registry struct {
 }
 
 func (r *Registry) RandImageFrom() *Image {
+
 	if len(r.Images) != len(r.ImagesByIndex) {
 		panic(fmt.Sprintf("Something is wrong with the index of images!!! %v %v", len(r.Images), len(r.ImagesByIndex)))
 	}
-	index := rand.Intn(len(r.Images))
+	index := math.MaxInt64
+	for index >= len(r.Images) || index < 0 {
+		index = util.RandIntFromDistribution(len(r.Images)/2, len(r.Images)/6)
+	}
 	return r.ImagesByIndex[index]
 }
 

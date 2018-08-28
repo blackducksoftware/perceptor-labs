@@ -27,7 +27,7 @@ type ClusterSim struct {
 	EventsPerMinute  int // Determines Total Actions...
 	ScansPerMinute   float32
 	ScanFailureRate  func() float32
-	scans            float32
+	scans            float64
 	/**
 	{
 		104810:{"myns1":{"high":2,"med":3,"low":10},
@@ -294,10 +294,11 @@ func (c *ClusterSim) RunAllEvents() {
 	for len(c.events) > 0 {
 		e, _c := util.RandRemove(c.events)
 		c.events = _c
-		runScans := func() {
+		// return an int but use float so we can use math.Max
+		scansToRun := func() float64 {
+			requestedScans := 0
 			// make incremental progress, i.e. 1/2 a scan, 1/3 a scan, ... every time point.
-			c.scans += util.RandFloatFromDistribution(float32(c.AvgScansPerEvent()), float32(c.AvgScansPerEvent()))
-
+			c.scans += float64(c.AvgScansPerEvent())
 			// once you hit an integer value, complete a scan, (some fail, common if failure rate is high).
 			if c.ScanFailureRate() < rand.Float32() {
 				// every so often, the # of total scans increases by an integer value.
@@ -307,23 +308,23 @@ func (c *ClusterSim) RunAllEvents() {
 				tries++
 				if len(c.st.Queue) == 0 {
 					zeros++
-					// logrus.Infof("Scan queue at zero, %v  / %v times.", zeros, tries)
 				}
-
-				for len(c.st.Queue) > 0 && int(c.scans) > len(c.st.Scanned) {
-					scannedImage := c.st.ScanNewImage(c.eventsProcessed)
-					if scannedImage == "" {
-						panic("scanned nothing!")
-					} else {
-						// logrus.Infof("%v : scanned image: [%v] total: [%v] : HISTORY TIME : %v", c.eventsProcessed, scannedImage, len(c.st.History), c.st.History[scannedImage])
-					}
-				}
+				requestedScans = int(math.Floor(c.scans) - float64(len(c.st.Scanned)))
 			} else {
-				// logrus.Infof("SKIPPING SCAN! %v", c.ScanFailureRate())
+				logrus.Infof("SKIPPING SCAN! %v", c.ScanFailureRate())
 			}
+			return float64(requestedScans)
+		}()
 
+		for i := 0.0; i < math.Min(scansToRun, float64(len(c.st.Queue))); i++ {
+			logrus.Infof("%v > %v, time:%v queue:%v", c.scans, len(c.st.Scanned), c.TimeSoFar(), len(c.st.Queue))
+			scannedImage := c.st.ScanNewImage(c.eventsProcessed)
+			if scannedImage == "" {
+				panic("scanned nothing!")
+			} else {
+				logrus.Infof("%v : scanned image: [%v] total: [%v] : HISTORY TIME : %v", c.eventsProcessed, scannedImage, len(c.st.History), c.st.History[scannedImage])
+			}
 		}
-		runScans()
 		e()
 		c.History.Next()
 		if rand.Intn(10000) == 1 {

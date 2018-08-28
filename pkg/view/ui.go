@@ -19,7 +19,7 @@ func LaunchUI(sims map[string]*model3.ClusterSim) {
 		vulns[title] = []int{}
 		eventIDs[title] = []int{}
 		for i := 0; i < sim.TotalActions(); i += sim.TotalActions() / 40 {
-			logrus.Infof("%v out of %v", i, sim.TotalActions()/40)
+			logrus.Infof("%v out of %v", i, sim.TotalActions()/100)
 			vulns[title] = append(vulns[title], sim.VulnsAt(i))
 			eventIDs[title] = append(eventIDs[title], i)
 		}
@@ -35,8 +35,6 @@ func LaunchUI(sims map[string]*model3.ClusterSim) {
 		sim := sims[title]
 		// build a new horizontally spanning chart
 		bcc := func() *termui.BarChart {
-			termui.Render(termui.NewPar(fmt.Sprintf("asdf %v %v", "a", "b")))
-
 			bc := termui.NewBarChart()
 			data := []int{}
 			bclabels := []string{}
@@ -48,7 +46,7 @@ func LaunchUI(sims map[string]*model3.ClusterSim) {
 				data = append(data, vuln)
 				bclabels = append(bclabels, fmt.Sprintf("%v[%v]", eventID, time.Duration(eventID)*sim.TimeElapsedPerEvent(eventID)))
 			}
-			bc.BarWidth = 15
+			bc.BarWidth = 8
 			bc.Data = data
 			bc.Width = 100
 			bc.Height = 20
