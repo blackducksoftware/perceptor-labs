@@ -4,6 +4,18 @@
 
 Look at the code in main.go, the parameters are self-explanatory.
 
+## Go
+
+just export your gopath
+cd clustersim/
+go run main.go
+
+Hack around with the simulation settings as needed and re run.
+
+The graphs will pop up in your terminal !
+
+
+## DOCKER 
 
 Then, you can build and run: 
 
