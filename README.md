@@ -1,5 +1,9 @@
 # vuln-sim
 
+![alt text](https://github.com/blackducksoftware/vuln-sim/raw/master/vulnsim.png
+ "a vulnerabilities vs remediation simulator")
+
+
 ## To run a simulation
 
 Look at the code in main.go, the parameters are self-explanatory.
